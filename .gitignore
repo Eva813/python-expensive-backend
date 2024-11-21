@@ -1,0 +1,10 @@
+# 虛擬環境
+myenv/
+
+# Python 編譯文件
+__pycache__/
+*.pyc
+
+# 敏感配置文件
+.env
+.flaskenv
