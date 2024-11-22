@@ -29,6 +29,24 @@ def delete_item(obj_id):
         result = jsonify(message='delete item failed')
     return result
 
+@app.route('/register/', methods=['POST'])
+def register_user():
+    data = request.get_json()
+    username = data.get('username')
+    email = data.get('email')
+    password = data.get('password')
+    print(data)
+    
+    # 調用 add_user 函數，並處理結果
+    result = em.add_user(username, email, password)
+    if 'error' in result:
+        response = jsonify(message=result['error'])
+        response.status_code = 400
+    else:
+        response = jsonify(message=result['message'])
+        response.status_code = 201
+    
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True)
