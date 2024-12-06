@@ -52,7 +52,7 @@ def get_items():
 # remove_item("牛奶", 100)
 
 # 添加新的用戶到 users 集合
-def add_user(username, email, password):
+def add_user(username, email, password=None):
     db = init_mongo()
     users_collection = db['users']
 
@@ -60,8 +60,13 @@ def add_user(username, email, password):
     if users_collection.find_one({'email': email}):
         return {'error': 'User already exists'}
 
-    # 假設這裡有進行密碼加密處理
-    hashed_password = generate_password_hash(password)
+    if password is not None and password != "":
+        # 若有密碼則進行加密
+        hashed_password = generate_password_hash(password)
+    else:
+        # 若 password 是 None 或空字串，代表 OAuth 用戶，無需雜湊密碼
+        hashed_password = None
+
     users_collection.insert_one({
         "username": username,
         "email": email,
@@ -69,3 +74,12 @@ def add_user(username, email, password):
         "created_at": datetime.datetime.utcnow()
     })
     return {'message': 'User registered successfully'}
+
+def get_user_by_email(email):
+    db = init_mongo()
+    users_collection = db['users']
+    user = users_collection.find_one({'email': email})
+    if user:
+        # 若您想要將 MongoDB 的 ObjectId 轉成字串：
+        user['_id'] = str(user['_id'])
+    return user
